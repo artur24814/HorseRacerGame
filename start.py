@@ -1,3 +1,8 @@
+"""
+=========================================
+The games main loop
+=========================================
+"""
 import pygame, sys
 import random
 from settings import WIDTH, HEIGHT
@@ -5,13 +10,16 @@ from models import Horse, Finish
 
 pygame.init()
 
-print('hello')
-
+# setup screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# load background
 background = pygame.image.load('./assets/tor.jpg')
 
+# Title of the window
 pygame.display.set_caption("The Best GAME")
 
+
+#init the games clock
 clock =pygame.time.Clock()
 pygame.mouse.set_visible(False)
 
@@ -22,6 +30,7 @@ horse_group = pygame.sprite.Group()
 
 shape = [0, 1, 4, 8]
 
+# create horse object nad add them to a Hourse groupe
 index = 1
 for _ in range(4):
     new_horse = Horse(20, 500 + 40 * index, start_pos=0, shape=random.choice(shape), name=f"Koń {index}")
@@ -43,7 +52,6 @@ def show_winning_text(screen, horse):
     text_surface = font.render(text, True, (0, 0, 0))
 
     screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 2 - text_surface.get_height() // 2 -100))
-
 
 
 while True:
