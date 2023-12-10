@@ -7,6 +7,16 @@ import pygame, sys
 import random
 from settings import WIDTH, HEIGHT
 from models import Horse, Finish
+from db.dbconfig import init_db
+from HorseManagement import HorseManager
+
+def main():
+    session = init_db()
+    HorseManager.init_horse_manager()
+
+if __name__ == "__main__":
+    main()
+
 
 pygame.init()
 
