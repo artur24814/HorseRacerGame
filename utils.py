@@ -76,7 +76,7 @@ def draw_table_with_horses(screen, horse_group):
     """
     # TODO: iteruj po koniach w grupie i maluj rząd tablic zawierający imię konia i jego współczynnik dla każdego konia
     # Przykład jak malować text jest w funkcji `show_winning_text`
-    # use win_rate_counter dla obliczania współczynnika wygranej  
+    # use win_rate_counter dla obliczania współczynnika wygranej
     pass
 
 
