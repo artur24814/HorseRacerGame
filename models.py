@@ -6,19 +6,21 @@ The games models with theirs ORM managers
 import pygame
 import random
 
+
+from settings import HORSE_SHAPE_LIST
 from utils import resource_path
 
 
 class HorseManager:
     """ORM manager for Horse model"""
 
-    def create(cursor, name, start_pos):
+    def create(self, cursor, name, start_pos):
         sql = "INSERT INTO HORSE (name, start_pos) VALUES (?,?)"
         values = (name, start_pos)
         cursor.execute(sql, values)
         return Horse(id=cursor.lastrowid, name=name, start_pos=start_pos)
 
-    def filter(cursor, fieldname, value):
+    def filter(self, cursor, fieldname, value):
         sql = f'SELECT id, name, start_pos FROM HORSE WHERE {fieldname}=?'
         cursor.execute(sql, (str(value), ))
         data = cursor.fetchone()
@@ -29,7 +31,7 @@ class HorseManager:
         else:
             return None
 
-    def all(cursor):
+    def all(self, cursor):
         sql = 'SELECT id, name, start_pos FROM HORSE'
         cursor.execute(sql)
         horses_list = list()
@@ -39,12 +41,12 @@ class HorseManager:
             horses_list.append(loaded_horse)
         return horses_list
 
-    def delete(cursor, id):
+    def delete(self, cursor, id):
         sql = "DELETE FROM HORSE WHERE id=?"
         cursor.execute(sql, (str(id),))
         return True
 
-    def update(cursor, start_pos, id):
+    def update(self, cursor, start_pos, id):
         sql = """
             UPDATE HORSE
             SET start_pos=?
@@ -87,9 +89,9 @@ class Horse(pygame.sprite.Sprite):
     """
 
     random_events = [-4, -3, -2, 0]
-    manager = HorseManager
+    manager = HorseManager()
 
-    def __init__(self, id=-1, pos_x=20, pos_y=540, start_pos=0, shape=None, points=0, name=None):
+    def __init__(self, id=-1, pos_x=20, pos_y=540, start_pos=0, shape=None, points=0, name=None, horse_images=None):
         super().__init__()
 
         self.id = id
@@ -103,20 +105,26 @@ class Horse(pygame.sprite.Sprite):
 
         self.name = name
 
+        # setup horse images
         self.sprites = []
-        self.sprites.append(pygame.image.load(resource_path('.\\assets\\kon1.png')))
-        self.sprites.append(pygame.image.load(resource_path('.\\assets\\kon2.png')))
-        self.sprites.append(pygame.image.load(resource_path('.\\assets\\kon3.png')))
-        self.sprites.append(pygame.image.load(resource_path('.\\assets\\kon4.png')))
-        self.current_sprite = 0
-        self.image = self.sprites[self.current_sprite]
-        self.image = pygame.transform.scale(self.image, (60, 60))
-        self.rect = self.image.get_rect()
-        self.rect.center = [pos_x, pos_y]
+        self.horse_images = horse_images
 
         # animating
         self.is_animating = False
         self.points = points
+
+    def shape_randomize(self):
+        self.shape = random.choice(HORSE_SHAPE_LIST)
+
+    def setup_images(self):
+        self.sprites = [pygame.image.load(resource_path(image)) for image in self.horse_images]
+        self.current_sprite = 0
+        self.image = self.sprites[self.current_sprite]
+        self.image = pygame.transform.scale(self.image, (60, 60))
+
+        # create rectangle
+        self.rect = self.image.get_rect()
+        self.rect.center = [self.pos_x, self.pos_y]
 
     def animate(self):
         """Start animating"""
@@ -155,6 +163,25 @@ class Horse(pygame.sprite.Sprite):
 
             self.image = self.sprites[int(self.current_sprite)]
             self.image = pygame.transform.scale(self.image, (60, 60))
+
+    def save(self, cursor):
+        """Create new record in DB, or update existing"""
+        if self._id == -1:
+            sql = """INSERT INTO HORSE (name, start_pos)
+                            VALUES(?, ?) RETURNING id"""
+            values = (self.name, self.start_pos)
+            cursor.execute(sql, values)
+            self._id = cursor.fetchone()[0]
+            return True
+        else:
+            sql = """UPDATE HORSE  SET name=?, start_pos=?
+                           WHERE id=?"""
+            values = (self.name, self.start_pos, self.id)
+            cursor.execute(sql, values)
+            return True
+
+    def __repr__(self):
+        return f"ID: {self.id}, NAME: {self.name}, start_pos: {self.start_pos}"
 
 
 class Finish:
