@@ -2,7 +2,7 @@ import sqlite3
 import pytest
 import tempfile
 
-from db.db import CREATE_HORSE_TABLE, CREATE_PLAYER_TABLE
+from db.db_config import CREATE_HORSE_TABLE, CREATE_PLAYER_TABLE
 from models import Horse
 
 

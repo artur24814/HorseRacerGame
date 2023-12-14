@@ -86,7 +86,7 @@ Install the project dependencies:
 `pip install -r requirements.txt`
 
 Write this code
-<code>python start.py<code>
+<code>python main.py<code>
 
 *If the `python` command doesn't work, try `python3`
 

@@ -5,12 +5,11 @@ The games main loop
 """
 import pygame
 import sys
-import random
 
 from settings import WIDTH, HEIGHT
 from models import Horse
-from db.db import db_init, create_connect
-from utils import resource_path
+from db.db_config import db_init, create_connect
+from utils import resource_path, show_winning_text, init_horse_group, draw_table_with_horses, recalculate_start_pos
 
 
 pygame.init()
@@ -18,6 +17,8 @@ pygame.init()
 # init DB
 db_init()
 cursor, cnx = create_connect()
+horses = Horse.manager.all(cursor)
+print(horses)
 
 # setup screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -32,7 +33,7 @@ bg_music.play(loops=-1)
 
 # horse run sound
 horse_run_sound = pygame.mixer.Sound(resource_path('.\\assets\\audio\\horse_galopp.mp3'))
-horse_run_sound.set_volume(0.1)
+horse_run_sound.set_volume(0.3)
 
 # cklick sound
 click_sound = pygame.mixer.Sound(resource_path('.\\assets\\audio\\click.mp3'))
@@ -49,25 +50,7 @@ pygame.mouse.set_visible(False)
 
 
 # Init horses Group
-horse_group = pygame.sprite.Group()
-
-shape = [0, 1, 4, 8]
-
-# Get all horses from databases
-# filled horse objects by position x and y in a screen and data (id, name, start_pos) from databases
-# add them to a Hourse groupe
-index = 1
-for horse in Horse.manager.all(cursor):
-    new_horse = Horse(
-        id=horse.id,
-        pos_x=20,
-        pos_y=500 + 40 * index,
-        start_pos=horse.start_pos,
-        shape=random.choice(shape),
-        name=horse.name
-    )
-    horse_group.add(new_horse)
-    index += 1
+horse_group = init_horse_group(cursor)
 
 counter = 0
 # When True update horse value
@@ -77,22 +60,9 @@ stop_game = False
 
 winning_horse = list()
 
-
-def show_winning_text(screen, horse):
-    # if more than one horse crossed the line
-    if len(horse) > 1:
-        text = 'Remis'
-    else:
-        text = f'{horse[0].name} wygrał'
-
-    # write text on the screen
-    # create font
-    font = pygame.font.Font(None, 56)
-    # add text to a font
-    text_surface = font.render(text, True, (0, 0, 0))
-
-    # add text to a screen
-    screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 2 - text_surface.get_height() // 2 - 100))
+# create custome event every 20 milsec
+EVERY20MILSEC = pygame.USEREVENT
+pygame.time.set_timer(EVERY20MILSEC, 400)  # 20 mlsec
 
 
 while True:
@@ -107,48 +77,62 @@ while True:
                 background = pygame.image.load(resource_path('.\\assets\\tor.jpg'))
                 click_sound.play()
                 start_page = False
-            else:
+
+            # start ride
+            elif not start_page and not run_horse and not stop_game:
                 run_horse = True
                 horse_run_sound.play(loops=-1)
                 for horse in horse_group:
                     horse.animate()
 
+            # when race is over move horse to a start
+            elif not start_page and not run_horse and stop_game:
+                winning_horse = []
+                stop_game = False
+
+                # NOTE: the count should take place before moving the horses to the start
+                recalculate_start_pos(cursor=cursor, horse_group=horse_group)
+
+                # moving the horses to the start
+                for horse in horse_group:
+                    horse.pos_x = 20
+                    horse.points = 0
+                    horse.shape_randomize()
+
+        if event.type == EVERY20MILSEC and not start_page and run_horse:
+
+            # for every houses in a group update their values
+            # Then in the loop, if the race is not finished, update each horse position with the new value
+            for horse in horse_group:
+                value = horse.get_value()
+
+                # Check that each horse has not crossed the line.
+                # If so, add this horse which crossed the line to the list.
+                if value + horse.pos_x >= WIDTH - 100:
+                    print(f'{horse.name} wygrał')
+
+                    winning_horse.append(horse)
+
+                    # finish race and stop horse animation
+                    stop_game = True
+                    run_horse = False
+                    horse_run_sound.stop()
+                    for horse in horse_group:
+                        horse.stop_animate()
+
     # set background image
     screen.blit(background, (0, 0))
 
-    # draw horses and update their positions
-    horse_group.draw(screen)
-    horse_group.update()
-
-    # do this only every 20 ms
-    if counter >= 20 and run_horse:
-
-        # for every houses in a group update their values
-        # Then in the loop, if the race is not finished, update each horse position with the new value
-        for horse in horse_group:
-            value = horse.get_value()
-
-            # Check that each horse has not crossed the line.
-            # If so, add this horse which crossed the line to the list.
-            if value + horse.pos_x >= WIDTH - 100:
-                print(f'{horse.name} wygrał')
-
-                winning_horse.append(horse)
-
-                # finish race and stop horse animation
-                stop_game = True
-                run_horse = False
-                horse_run_sound.stop()
-                for horse in horse_group:
-                    horse.stop_animate()
-
-        # refresh counter
-        counter = 0
-
-    counter += 1
+    if not start_page:
+        # draw horses and update their positions
+        horse_group.draw(screen)
+        horse_group.update()
 
     if stop_game and winning_horse:
         show_winning_text(screen, winning_horse)
+
+    if not start_page and not stop_game and not winning_horse and not run_horse:
+        draw_table_with_horses(screen=screen, horse_group=horse_group)
 
     pygame.display.flip()
 
