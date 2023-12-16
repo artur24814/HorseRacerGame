@@ -9,7 +9,14 @@ import sys
 from settings import WIDTH, HEIGHT
 from models import Horse
 from db.db_config import db_init, create_connect
-from utils import resource_path, show_winning_text, init_horse_group, draw_table_with_horses, recalculate_start_pos
+from utils import (
+    resource_path,
+    show_winning_text,
+    init_horse_group,
+    add_text_to_a_screen,
+    draw_table_with_horses,
+    recalculate_start_pos
+)
 
 
 pygame.init()
@@ -20,13 +27,21 @@ cursor, cnx = create_connect()
 horses = Horse.manager.all(cursor)
 print(horses)
 
+# Init Game Fonts
+main_font = pygame.font.Font(resource_path('.\\assets\\fonts\\v5_prophit_cell\\V5PRD___.TTF'), 50)
+table_font = pygame.font.Font(resource_path('.\\assets\\fonts\\perfect_dos_vga_437\\Perfect DOS VGA 437 Win.ttf'), 40)
+winning_font = pygame.font.Font(resource_path('.\\assets\\fonts\\retro_land_mayhem\\retro-land-mayhem.ttf'), 66)
+
 # setup screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # load background
 background = pygame.image.load(resource_path('.\\assets\\start_page.png'))
+# Title of the window
+pygame.display.set_caption("The Best GAME")
 start_page = True
 
-# play music
+# init music
+# background music
 bg_music = pygame.mixer.Sound(resource_path('.\\assets\\audio\\horse_game.wav'))
 bg_music.set_volume(0.1)
 bg_music.play(loops=-1)
@@ -38,10 +53,6 @@ horse_run_sound.set_volume(0.3)
 # cklick sound
 click_sound = pygame.mixer.Sound(resource_path('.\\assets\\audio\\click.mp3'))
 click_sound.set_volume(0.1)
-
-
-# Title of the window
-pygame.display.set_caption("The Best GAME")
 
 
 # init the games clock
@@ -69,6 +80,7 @@ while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            cnx.close()
             pygame.quit()
             sys.exit()
 
@@ -92,6 +104,9 @@ while True:
 
                 # NOTE: the count should take place before moving the horses to the start
                 recalculate_start_pos(cursor=cursor, horse_group=horse_group)
+
+                # commit changes to a database
+                cnx.commit()
 
                 # moving the horses to the start
                 for horse in horse_group:
@@ -123,16 +138,25 @@ while True:
     # set background image
     screen.blit(background, (0, 0))
 
+    if start_page:
+        add_text_to_a_screen(
+            screen=screen,
+            text='Horse Racer GAME',
+            font=main_font,
+            center=True,
+            center_plus_y=-50
+        )
+
     if not start_page:
         # draw horses and update their positions
         horse_group.draw(screen)
         horse_group.update()
 
     if stop_game and winning_horse:
-        show_winning_text(screen, winning_horse)
+        show_winning_text(screen, winning_horse, winning_font)
 
     if not start_page and not stop_game and not winning_horse and not run_horse:
-        draw_table_with_horses(screen=screen, horse_group=horse_group)
+        draw_table_with_horses(screen=screen, horse_group=horse_group, font=table_font)
 
     pygame.display.flip()
 
