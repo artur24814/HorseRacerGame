@@ -29,4 +29,4 @@ jobs:
 
       - name: Run tests
         run: |
-          flake8 --max-line-length=200
+          pytest

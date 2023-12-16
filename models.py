@@ -166,12 +166,12 @@ class Horse(pygame.sprite.Sprite):
 
     def save(self, cursor):
         """Create new record in DB, or update existing"""
-        if self._id == -1:
+        if self.id == -1:
             sql = """INSERT INTO HORSE (name, start_pos)
                             VALUES(?, ?) RETURNING id"""
             values = (self.name, self.start_pos)
             cursor.execute(sql, values)
-            self._id = cursor.fetchone()[0]
+            self.id = cursor.fetchone()[0]
             return True
         else:
             sql = """UPDATE HORSE  SET name=?, start_pos=?
