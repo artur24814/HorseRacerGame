@@ -91,6 +91,10 @@ def win_rate_counter(start_pos):
 
 
 def recalculate_start_pos(cursor, horse_group):
+    sorted_horse_group = sorted(horse_group, key=lambda horse: horse.points)
+    for i, horse in enumerate(sorted_horse_group):
+        horse.start_pos = horse.start_pos + (1 - i * 0.5)
+        horse.save(cursor)
     # TODO: dla każdego konia prelicz nową wartość `start_pos` i zapisz (użyj horse.save(cursor) dla konia z nową wartością `start_pos`)
     # Posortuj liste po horse.points
     # dla konia z największym znaczenia `points` dodaj 1 do `start_pos`
