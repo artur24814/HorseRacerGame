@@ -42,7 +42,7 @@ def db_init():
             random_name = f'{random.choice(prefixes_from_file)} {random.choice(suffixes_from_file)}'
 
             if not Horse.manager.filter(cursor, 'name', random_name):
-                horse = Horse.manager.create(cursor, random_name, 0)
+                horse = Horse.manager.create(cursor, random_name, 1.5)
                 unique_horses.append(horse)
                 cnx.commit()
 

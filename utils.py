@@ -33,7 +33,7 @@ def init_horse_group(cursor):
         horse.pos_x = 20
         horse.pos_y = 500 + 40 * index
         horse.shape = random.choice(HORSE_SHAPE_LIST)
-        horse.horse_images = HORSE_IMAGES
+        horse.horse_images = HORSE_IMAGES[horse.id-1]
         horse.setup_images()
 
         horse_group.add(horse)
@@ -140,7 +140,7 @@ def win_rate_counter(start_pos):
     """count winrate base on `start_pos`"""
     # we assume that for max win rate is 1.3
     # count coefficent from max `start_pos`
-    if start_pos == 0:
+    if start_pos <= 1:
         return 6.3
 
     return round((MAX_START_POS / start_pos) * 1.3, 1)
@@ -149,7 +149,7 @@ def win_rate_counter(start_pos):
 def recalculate_start_pos(cursor, horse_group):
     """for each horse count new start_pos base on current points after race"""
     # sort group by points
-    sorted_horse_group = sorted(horse_group, key=lambda horse: horse.points)
+    sorted_horse_group = sorted(horse_group, key=lambda horse: horse.points, reverse=True)
 
     # recalculate `start_pos` and save
     for i, horse in enumerate(sorted_horse_group):
