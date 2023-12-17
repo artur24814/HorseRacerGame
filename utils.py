@@ -48,7 +48,7 @@ def show_winning_text(screen, horse, font):
     if len(horse) > 1:
         text = 'Remis'
     else:
-        text = f'{horse[0].name} wygrał'
+        text = f'{horse[0].name} Win !!!'
 
     # add text to a screen
     add_text_to_a_screen(
@@ -60,10 +60,13 @@ def show_winning_text(screen, horse, font):
     )
 
 
-def add_text_to_a_screen(screen, text, pos_x=None, pos_y=None, font=None, center=False, center_plus_y=None):
+def add_text_to_a_screen(screen, text, pos_x=None, pos_y=None, font=None, center=False, center_plus_y=None, color=None):
     """write text on the screen"""
     # add text to a font
     text_surface = font.render(text, True, (0, 0, 0))
+
+    if color:
+        text_surface = font.render(text, True, color)
 
     # if we need text in a center of a screen
     if center:
@@ -75,6 +78,16 @@ def add_text_to_a_screen(screen, text, pos_x=None, pos_y=None, font=None, center
         pos_y = HEIGHT // 2 - text_surface.get_height() // 2 + center_plus_y
 
     screen.blit(text_surface, (pos_x, pos_y))
+
+
+def draw_rectangle(screen, size, color):
+    """
+    in:
+        screen: main GAME screen
+        size: tuple(posx, pos_y, size_x, size_y)
+        color: tuple(rgb)
+    """
+    pygame.draw.rect(screen, color, pygame.Rect(size))
 
 
 def draw_table_with_horses(screen, horse_group, font):
@@ -98,24 +111,39 @@ def draw_table_with_horses(screen, horse_group, font):
     positon_y = 180
 
     # add col 1 to a screen
-    add_text_to_a_screen(screen=screen, text=headers1, pos_x=positon_x_1_col, pos_y=positon_y, font=font)
+    add_text_to_a_screen(screen=screen, text=headers1, pos_x=positon_x_1_col, pos_y=positon_y, font=font, color=(255, 255, 255))
     # add col 2 to a screen
-    add_text_to_a_screen(screen=screen, text=headers2, pos_x=positon_x_2_col, pos_y=positon_y, font=font)
+    add_text_to_a_screen(screen=screen, text=headers2, pos_x=positon_x_2_col, pos_y=positon_y, font=font, color=(255, 255, 255))
 
     for i, horse in enumerate(horse_group, 1):
 
         # add col 1 to a screen
-        add_text_to_a_screen(screen=screen, text=f'| {horse.name}', pos_x=positon_x_1_col, pos_y=positon_y + (i * 35), font=font)
+        add_text_to_a_screen(
+            screen=screen,
+            text=f'| {horse.name}',
+            pos_x=positon_x_1_col,
+            pos_y=positon_y + (i * 35),
+            font=font,
+            color=(255, 255, 255)
+        )
         # add col 2 to a screen
-        add_text_to_a_screen(screen=screen, text=f'| {win_rate_counter(horse.start_pos)}', pos_x=positon_x_2_col, pos_y=positon_y + (i * 35), font=font)
+        add_text_to_a_screen(
+            screen=screen,
+            text=f'| {win_rate_counter(horse.start_pos)}',
+            pos_x=positon_x_2_col, pos_y=positon_y + (i * 35),
+            font=font,
+            color=(255, 255, 255)
+        )
 
 
 def win_rate_counter(start_pos):
     """count winrate base on `start_pos`"""
     # we assume that for max win rate is 1.3
     # count coefficent from max `start_pos`
-    coefficent = MAX_START_POS - 1.3
-    return start_pos + coefficent
+    if start_pos == 0:
+        return 6.3
+
+    return round((MAX_START_POS / start_pos) * 1.3, 1)
 
 
 def recalculate_start_pos(cursor, horse_group):

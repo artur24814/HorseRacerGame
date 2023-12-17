@@ -15,6 +15,7 @@ from utils import (
     init_horse_group,
     add_text_to_a_screen,
     draw_table_with_horses,
+    draw_rectangle,
     recalculate_start_pos
 )
 
@@ -63,6 +64,7 @@ pygame.mouse.set_visible(False)
 # Init horses Group
 horse_group = init_horse_group(cursor)
 
+counter_start_page_anim = 300
 counter = 0
 # When True update horse value
 run_horse = False
@@ -139,12 +141,28 @@ while True:
     screen.blit(background, (0, 0))
 
     if start_page:
+        # NOTE:  we use counter_start_page_anim variable for animation main font
+        # define main font size as equal to counter_start_page_anim
+        main_font = pygame.font.Font(resource_path('.\\assets\\fonts\\v5_prophit_cell\\V5PRD___.TTF'), counter_start_page_anim)
+
         add_text_to_a_screen(
             screen=screen,
             text='Horse Racer GAME',
             font=main_font,
             center=True,
             center_plus_y=-50
+        )
+        # stop reducing the size 50 counter
+        if counter_start_page_anim >= 50:
+            counter_start_page_anim -= 3
+
+        add_text_to_a_screen(
+            screen=screen,
+            text='Press any button to start',
+            font=winning_font,
+            center=True,
+            center_plus_y=200,
+            color=(0, 0, 255)
         )
 
     if not start_page:
@@ -156,6 +174,8 @@ while True:
         show_winning_text(screen, winning_horse, winning_font)
 
     if not start_page and not stop_game and not winning_horse and not run_horse:
+        # draw rectangle under a table (for better reading)
+        draw_rectangle(screen=screen, size=(300, 180, 600, 180), color=(50, 50, 50))
         draw_table_with_horses(screen=screen, horse_group=horse_group, font=table_font)
 
     pygame.display.flip()
