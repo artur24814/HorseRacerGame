@@ -113,6 +113,9 @@ class Horse(pygame.sprite.Sprite):
         self.is_animating = False
         self.points = points
 
+        # betting
+        self.betted = False
+
     def shape_randomize(self):
         self.shape = random.choice(HORSE_SHAPE_LIST)
 
@@ -152,6 +155,22 @@ class Horse(pygame.sprite.Sprite):
         """Change object's positin atribute"""
         self.pos_x = position
 
+    def betting_on_this_horse(self):
+        """We are betting on this horse"""
+        self.betted = True
+
+    def finish_ride(self):
+        """
+        When ride is over:
+        set betted to false,
+        move horse in a start,
+        Ramdomize shape for next ride
+        """
+        self.betted = False
+        self.pos_x = 20
+        self.points = 0
+        self.shape_randomize()
+
     def update(self):
         """Update horse position in 'x' coordinates and draw this horse in a screen"""
         self.rect.center = [self.pos_x + self.points, self.pos_y]
@@ -182,6 +201,34 @@ class Horse(pygame.sprite.Sprite):
 
     def __repr__(self):
         return f"ID: {self.id}, NAME: {self.name}, start_pos: {self.start_pos}"
+
+
+class Crosshair(pygame.sprite.Sprite):
+    """Cursor class"""
+
+    def __init__(self, path):
+        super().__init__()
+        self.image = pygame.image.load(path)
+        self.image = pygame.transform.scale(self.image, (25, 25))
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        self.rect.center = pygame.mouse.get_pos()
+
+
+class Money(pygame.sprite.Sprite):
+    """Money class"""
+
+    def __init__(self, path, pos_y, pos_x=20):
+        super().__init__()
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.image = pygame.image.load(path)
+        self.image = pygame.transform.scale(self.image, (45, 25))
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        self.rect.center = [self.pos_x, self.pos_y]
 
 
 class Finish:
