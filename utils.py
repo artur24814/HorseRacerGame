@@ -31,7 +31,7 @@ def init_horse_group(cursor):
     index = 1
     for horse in Horse.manager.all(cursor):
         horse.pos_x = 20
-        horse.pos_y = 500 + 40 * index
+        horse.pos_y = 500 + 50 * index
         horse.shape = random.choice(HORSE_SHAPE_LIST)
         horse.horse_images = HORSE_IMAGES[horse.id-1]
         horse.setup_images()
@@ -153,7 +153,15 @@ def recalculate_start_pos(cursor, horse_group):
 
     # recalculate `start_pos` and save
     for i, horse in enumerate(sorted_horse_group):
-        # TODO: Weź pod uwagę MAX_START_POS i MAX_START_POS z pliku setting
-        # musimy to ograniczyć od dołu i od góry, aby nie było bezsensownych zabiegów (kiedy wynik będzie znany z góry)
-        horse.start_pos = horse.start_pos + (1 - i * 0.5)
+        new_start_pos = horse.start_pos + (1 - i * 0.5)
+
+        # Limitations from above
+        if new_start_pos > MAX_START_POS:
+            new_start_pos = MAX_START_POS
+
+        # Limitations from below
+        if new_start_pos < 1:
+            new_start_pos = 1
+
+        horse.start_pos = new_start_pos
         horse.save(cursor)
