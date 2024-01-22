@@ -31,7 +31,7 @@ def init_horse_group(cursor):
     index = 1
     for horse in Horse.manager.all(cursor):
         horse.pos_x = 20
-        horse.pos_y = 500 + 50 * index
+        horse.pos_y = 480 + 50 * index
         horse.shape = random.choice(HORSE_SHAPE_LIST)
         horse.horse_images = HORSE_IMAGES[horse.id-1]
         horse.setup_images()
