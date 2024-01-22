@@ -1,6 +1,6 @@
 """
 =========================================
-The games main loop
+The game main loop
 =========================================
 """
 import pygame
@@ -56,20 +56,23 @@ horse_run_sound.set_volume(0.3)
 click_sound = pygame.mixer.Sound(resource_path('.\\assets\\audio\\click.mp3'))
 click_sound.set_volume(0.1)
 
+# shot sound
+shot_sound = pygame.mixer.Sound(resource_path('.\\assets\\audio\\shot.wav'))
+shot_sound.set_volume(0.1)
 
 # init the games clock
 clock = pygame.time.Clock()
+
+# hide standart mouse cursor on top of the screen
 pygame.mouse.set_visible(False)
 
-# Init cursor class
+# Init custome cursor class
 crosshair = Crosshair('./assets/curs.png')
-
 crosshair_group = pygame.sprite.Group()
 crosshair_group.add(crosshair)
 
 # Init Money class
 money = Money('./assets/money.jpg', -30)
-
 money_group = pygame.sprite.Group()
 money_group.add(money)
 
@@ -78,13 +81,22 @@ player_money = 2000
 # Init horses Group
 horse_group = init_horse_group(cursor)
 
+# group of variables for animating the start page
+# we start displaying the text in large font and reduce it to normal size
 counter_start_page_anim = 300
+
+# variable for animating the money counter
+# start count from zero to player actual amount of money
 counter_start_money_anim = 0
+
+# group of variables for animating betting on the horse
+# we start drowing money on top of the screen and put then onthe betting horse
 counter_money_position_animation = -30
 money_bet_position = -30
-counter = 0
-# When True update horse value
+
+# When True update horse value (animate horse)
 run_horse = False
+
 # When True show winning text in a screen
 stop_game = False
 
@@ -105,20 +117,25 @@ while True:
             pygame.quit()
             sys.exit()
 
+        # if any key pressed:
         if event.type == pygame.KEYDOWN:
+            # go to the next page for the current start window
             if start_page:
                 background = pygame.image.load(resource_path('.\\assets\\tor.jpg'))
                 click_sound.play()
                 start_page = False
 
-            # start ride
+            # If not the starting window, start ride after push any button
+            # run horse, play sound
             elif not start_page and not run_horse and not stop_game:
                 run_horse = True
                 horse_run_sound.play(loops=-1)
+                shot_sound.play()
                 for horse in horse_group:
                     horse.animate()
 
-            # when race is over move horse to a start
+            # when race is over move horse to a start after push any button
+            # and recalculate their `start_pos`
             elif not start_page and not run_horse and stop_game:
                 winning_horse = []
                 stop_game = False
@@ -134,6 +151,8 @@ while True:
                     horse.finish_ride()
                     bet_done = False
 
+        # if mouse clicked
+        # and the bet hasn't done yet
         if event.type == pygame.MOUSEBUTTONDOWN and horse_for_bet and not bet_done:
             money_bet_position = horse_for_bet.pos_y
 
@@ -149,6 +168,8 @@ while True:
                 else:
                     horse.betted = False
 
+        # special custome event
+        # recalculate randome event for each horse if race has been started
         if event.type == EVERY20MILSEC and not start_page and run_horse:
 
             # for every horses in a group update their values
@@ -172,6 +193,8 @@ while True:
     # set background image
     screen.blit(background, (0, 0))
 
+    # on the start page we don't need horses
+    # only texts
     if start_page:
         # NOTE:  we use counter_start_page_anim variable for animation main font
         # define main font size as equal to counter_start_page_anim
@@ -197,11 +220,13 @@ while True:
             color=(0, 0, 255)
         )
 
+    # if it's not start page > draw horses
     if not start_page:
         # draw horses and update their positions
         horse_group.draw(screen)
         horse_group.update()
 
+    # if the race didn't take place and we have an any winning horse
     if stop_game and winning_horse:
         show_winning_text(screen, winning_horse, winning_font)
 
@@ -217,6 +242,9 @@ while True:
         counter_money_position_animation = -30
         money_bet_position = -30
 
+    # window between the start page and the race and after the race before the next race
+    # in this window we show the table with horses winning rate
+    # and in this window we can place bets
     if not start_page and not stop_game and not winning_horse and not run_horse:
 
         # animate money counter (Start at 0 and increase to reach the player's money amount)

@@ -140,8 +140,8 @@ def win_rate_counter(start_pos):
     """count winrate base on `start_pos`"""
     # we assume that for max win rate is 1.3
     # count coefficent from max `start_pos`
-    if start_pos <= 1:
-        return 6.3
+    if start_pos <= 2:
+        return 4.3
 
     return round((MAX_START_POS / start_pos) * 1.3, 1)
 
@@ -153,15 +153,15 @@ def recalculate_start_pos(cursor, horse_group):
 
     # recalculate `start_pos` and save
     for i, horse in enumerate(sorted_horse_group):
-        new_start_pos = horse.start_pos + (1 - i * 0.5)
+        new_start_pos = horse.start_pos + (2 - i * 1.5)
 
         # Limitations from above
         if new_start_pos > MAX_START_POS:
             new_start_pos = MAX_START_POS
 
         # Limitations from below
-        if new_start_pos < 1:
-            new_start_pos = 1
+        if new_start_pos < 2:
+            new_start_pos = 2
 
         horse.start_pos = new_start_pos
         horse.save(cursor)
