@@ -203,6 +203,46 @@ class Horse(pygame.sprite.Sprite):
         return f"ID: {self.id}, NAME: {self.name}, start_pos: {self.start_pos}"
 
 
+class PlayerManager:
+    """ORM manager for Player model"""
+
+    # TODO:
+    def create(self, cursor, name):
+        pass
+
+    def filter(self, cursor, fieldname, value):
+        pass
+
+    def all(self, cursor):
+        pass
+
+    def update(self, cursor, id, money):
+        pass
+
+    def delete(self, cursor, id):
+        pass
+
+
+class Player:
+    manager = PlayerManager()
+
+    def __init__(self, id=-1, name='Player', win=0, lose=0, money=2000):
+        self.id = id
+        self.name = name
+        self.win = win
+        self.lose = lose
+        self.money = money
+
+    def save(self):
+        # TODO:
+        if self.id == -1:
+            # create new
+            pass
+        else:
+            # update
+            pass
+
+
 class Crosshair(pygame.sprite.Sprite):
     """Cursor class"""
 
@@ -229,16 +269,3 @@ class Money(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.center = [self.pos_x, self.pos_y]
-
-
-class Finish:
-
-    def __init__(self, start_pos, pos_x, pos_y, image):
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-        self.image = image
-        self.rect = self.image.get_rect()
-
-    def check_collide(self, horse):
-
-        return self.rect.colliderect(horse.rect)
