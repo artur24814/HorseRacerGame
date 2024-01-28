@@ -1,3 +1,8 @@
+"""
+=========================================
+The games Utilities and helper functions
+=========================================
+"""
 import sys
 import os
 import pygame

@@ -39,7 +39,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 # load background
 background = pygame.image.load(resource_path('.\\assets\\start_page.png'))
 # Title of the window
-pygame.display.set_caption("The Best GAME")
+pygame.display.set_caption("GAMBLE GALLOP")
 start_page = True
 
 # init music
@@ -202,7 +202,7 @@ while True:
 
         add_text_to_a_screen(
             screen=screen,
-            text='Horse Racer GAME',
+            text='Gamble Gallop GAME',
             font=main_font,
             center=True,
             center_plus_y=-50

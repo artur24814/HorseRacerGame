@@ -88,7 +88,7 @@ class Horse(pygame.sprite.Sprite):
         Update horse position in 'x' coordinates and draw this horse in a screen
     """
 
-    random_events = [-8, -3, -2, 0]
+    random_events = [-8, -2, 0, 6]
     manager = HorseManager()
 
     def __init__(self, id=-1, pos_x=20, pos_y=540, start_pos=0, shape=None, points=0, name=None, horse_images=None):

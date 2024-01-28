@@ -1,27 +1,27 @@
-# HorseRacerGame
+# GambleGallop
 
-<img src="https://camo.githubusercontent.com/1971c0a4f776fb5351c765c37e59630c83cabd52/68747470733a2f2f7777772e707967616d652e6f72672f696d616765732f6c6f676f2e706e67">
+<img src="https://www.pygame.org/docs/_images/pygame_lofi.png">
 <ul>
 <h2>Contents</h2>
-<li><a href="https://github.com/artur24814/HorseRacerGame?tab=readme-ov-file#releases"><h3>releases</h3></a>A list of all our future and existing releases</li>
-<li><a href="https://github.com/artur24814/HorseRacerGame?tab=readme-ov-file#clone_project"><h3>clone and run this project on your local machine</h3></a>how run projects in your computer</li>
+<li><a href="https://github.com/artur24814/HorseRacerGame/#releases"><h3>releases</h3></a>A list of all our future and existing releases</li>
+<li><a href="https://github.com/artur24814/HorseRacerGame/#clone_project"><h3>clone and run this project on your local machine</h3></a>how run projects in your computer</li>
 </ul>
 <hr>
 <h1 id="releases">Releases</h1>
-<h3>Version 1.1.0. 10.12.2023</h3>
+<h3>Version 1.2.0. 10.12.2023</h3>
 <ul>
 <li>After each race, each horse receives points that will be important in calculating `start_pos` for the next race (User can see this changes only in terminal);</li>
 <li>Implementation of the standard python sqlite3 database;</li>
 <li>ORM for game models (CRUD for Horse);</li>
 </ul>
-<h3>Version 1.2.0. 16.12.2023</h3>
+<h3>Version 1.3.0. 16.12.2023</h3>
 <ul>
 <li>Adding new screens: Home screen when loading the game and the betting screen;</li>
 <li>Depending on the horse's `start_pos`, the player can see how much money they can receive if he bet on a specific horse (Implementation of the win rate);</li>
 <li>Creating automated tests in pytest;</li>
 <li>ORM for game models (CRUD for Player);</li>
 </ul>
-<h3>Version 1.2.0. 30.12.2023</h3>
+<h3>Version 1.3.0. 30.12.2023</h3>
 <ul>
 <li>The player can see a table with the winning rate of each horse on the betting screen. And he can change the horse's name and put money on it;</li>
 <li>After the race, players' money is recalculated;</li>
