@@ -35,7 +35,7 @@ HORSE_IMAGES = (
     ),
 )
 
-HORSE_SHAPE_LIST = [0, 0.5, 2, 4]
+HORSE_SHAPE_LIST = [0, 1, 3, 8]
 
 MAX_START_POS = 5
 MIN_START_POS = 1
